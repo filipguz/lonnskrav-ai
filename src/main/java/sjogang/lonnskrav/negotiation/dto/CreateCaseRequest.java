@@ -1,4 +1,8 @@
 package sjogang.lonnskrav.negotiation.dto;
 
-public class CreateCaseRequest {
+public record CreateCaseRequest(
+        String title,
+        Integer negotiationYear,
+        String orgNumber
+) {
 }

@@ -1,0 +1,14 @@
+GET http://localhost:8080/api/cases
+
+###
+POST http://localhost:8080/api/cases
+Content-Type: application/json
+
+{
+  "title": "Lokale forhandlinger 2026",
+  "negotiationYear": 2026,
+  "orgNumber": "123456789"
+}
+
+###
+GET http://localhost:8080/api/cases
