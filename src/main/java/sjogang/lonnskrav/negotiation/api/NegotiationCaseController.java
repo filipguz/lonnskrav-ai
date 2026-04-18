@@ -1,6 +1,7 @@
 package sjogang.lonnskrav.negotiation.api;
 
 import lombok.RequiredArgsConstructor;
+import sjogang.lonnskrav.analysis.domain.AnalysisResult;
 import sjogang.lonnskrav.negotiation.application.NegotiationCaseService;
 import sjogang.lonnskrav.negotiation.domain.NegotiationCase;
 import sjogang.lonnskrav.negotiation.dto.CreateCaseRequest;
@@ -23,5 +24,15 @@ public class NegotiationCaseController {
     @GetMapping
     public List<NegotiationCase> getAll() {
         return caseService.getAllCases();
+    }
+
+    @GetMapping("/{id}")
+    public NegotiationCase getById(@PathVariable Long id) {
+        return caseService.getCaseById(id);
+    }
+
+    @GetMapping("/{id}/analyze")
+    public AnalysisResult analyze(@PathVariable Long id) {
+        return caseService.analyzeCase(id);
     }
 }

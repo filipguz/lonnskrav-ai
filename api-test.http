@@ -1,0 +1,15 @@
+### Opprett sak
+POST http://localhost:8080/api/cases
+Content-Type: application/json
+
+{
+  "title": "Forhandling 2026",
+  "negotiationYear": 2026,
+  "orgNumber": "123456789"
+}
+
+### Hent alle saker
+GET http://localhost:8080/api/cases
+
+### Analyser sak (bytt id)
+GET http://localhost:8080/api/cases/1/analyze
