@@ -19,8 +19,6 @@ public class Company {
     @Column(nullable = false)
     private String name;
 
-    // 👇 NYE FELTER FRA BRREG
-
     private String industryCode;
     private String industryDescription;
 

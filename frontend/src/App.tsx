@@ -6,6 +6,14 @@ type Company = {
   id?: number;
   orgNumber: string;
   name: string;
+  industryCode?: string;
+  industryDescription?: string;
+  organizationFormCode?: string;
+  organizationFormDescription?: string;
+  employees?: number;
+  bankrupt?: boolean;
+  underLiquidation?: boolean;
+  businessAddress?: string;
 };
 
 type NegotiationCase = {
@@ -33,7 +41,7 @@ type CreateCaseForm = {
 const initialForm: CreateCaseForm = {
   title: "Lokale forhandlinger 2026",
   negotiationYear: "2026",
-  orgNumber: "123456789",
+  orgNumber: "918405119",
 };
 
 function scoreLabel(score: number) {
@@ -93,9 +101,20 @@ export default function App() {
     try {
       setLoadingCases(true);
       setError(null);
+
       const data = await fetchJson<NegotiationCase[]>(`${API_BASE_URL}/api/cases`);
       setCases(data);
-      if (data.length > 0 && !selectedCase) {
+
+      if (data.length === 0) {
+        setSelectedCase(null);
+        setAnalysis(null);
+        return;
+      }
+
+      if (selectedCase) {
+        const updatedSelected = data.find((item) => item.id === selectedCase.id);
+        setSelectedCase(updatedSelected ?? data[0]);
+      } else {
         setSelectedCase(data[0]);
       }
     } catch (err) {
@@ -163,11 +182,12 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold">Lønnskrav AI</h1>
               <p className="text-sm text-slate-500">
-                En beslutningsstøtte-applikasjon for tillitsvalgte som gjør selskapsdata om til dokumenterte og begrunnede lønnskrav.
+                En beslutningsstøtte-applikasjon for tillitsvalgte som gjør
+                selskapsdata om til dokumenterte og begrunnede lønnskrav.
               </p>
             </div>
 
@@ -187,7 +207,7 @@ export default function App() {
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold">Opprett ny forhandlingssak</h2>
             <p className="mt-2 text-sm text-slate-500">
-              Lag en sak og kjør analyse
+              Lag en sak og kjør analyse.
             </p>
 
             <div className="mt-6 space-y-4">
@@ -217,7 +237,9 @@ export default function App() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">Organisasjonsnummer</label>
+                <label className="mb-1 block text-sm font-medium">
+                  Organisasjonsnummer
+                </label>
                 <input
                   className="w-full rounded-xl border border-slate-300 px-3 py-2"
                   value={form.orgNumber}
@@ -246,7 +268,7 @@ export default function App() {
               </div>
 
               {error && (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 whitespace-pre-wrap">
                   {error}
                 </div>
               )}
@@ -289,7 +311,8 @@ export default function App() {
                           active ? "text-slate-300" : "text-slate-500"
                         }`}
                       >
-                        {item.company?.name ?? "Ukjent selskap"} · {item.negotiationYear}
+                        {item.company?.name ?? "Ukjent selskap"} · {item.negotiationYear} ·{" "}
+                        {item.company?.organizationFormCode ?? "-"}
                       </div>
                     </button>
                   );
@@ -311,9 +334,68 @@ export default function App() {
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">Selskap</div>
+                  <div className="text-sm text-slate-500">Selskapsnavn</div>
                   <div className="mt-1 font-medium">
                     {selectedCase.company?.name ?? "Ukjent"}
+                  </div>
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Organisasjonsnummer</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.orgNumber ?? "-"}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Organisasjonsform</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.organizationFormDescription ?? "-"}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {selectedCase.company?.organizationFormCode ?? ""}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Bransje</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.industryDescription ?? "-"}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {selectedCase.company?.industryCode ?? ""}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Antall ansatte</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.employees ?? 0}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <div className="text-sm text-slate-500">Adresse</div>
+                  <div className="mt-1 font-medium">
+                    {selectedCase.company?.businessAddress ?? "-"}
+                  </div>
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Konkurs</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.bankrupt ? "Ja" : "Nei"}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <div className="text-sm text-slate-500">Under avvikling</div>
+                    <div className="mt-1 font-medium">
+                      {selectedCase.company?.underLiquidation ? "Ja" : "Nei"}
+                    </div>
                   </div>
                 </div>
 
@@ -354,14 +436,19 @@ export default function App() {
                     ["Fremtidsutsikter", analysis.outlookScore],
                     ["Konkurranseevne", analysis.competitivenessScore],
                   ].map(([label, value]) => (
-                    <div key={String(label)} className="rounded-xl border border-slate-200 p-4">
+                    <div
+                      key={String(label)}
+                      className="rounded-xl border border-slate-200 p-4"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{label}</div>
                         <div className="text-sm text-slate-500">
                           {scoreLabel(Number(value))}
                         </div>
                       </div>
-                      <div className="mt-2 text-2xl font-semibold">{String(value)}/10</div>
+                      <div className="mt-2 text-2xl font-semibold">
+                        {String(value)}/10
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -5,6 +5,7 @@ import sjogang.lonnskrav.analysis.application.AnalysisService;
 import sjogang.lonnskrav.analysis.domain.AnalysisResult;
 import sjogang.lonnskrav.company.domain.Company;
 import sjogang.lonnskrav.company.infrastructure.CompanyRepository;
+import sjogang.lonnskrav.datasource.application.CompanyDataService;
 import sjogang.lonnskrav.negotiation.domain.NegotiationCase;
 import sjogang.lonnskrav.negotiation.dto.CreateCaseRequest;
 import sjogang.lonnskrav.negotiation.infrastructure.NegotiationCaseRepository;
@@ -20,6 +21,7 @@ public class NegotiationCaseService {
     private final NegotiationCaseRepository caseRepository;
     private final CompanyRepository companyRepository;
     private final AnalysisService analysisService;
+    private final CompanyDataService companyDataService;
 
     public NegotiationCase createCase(CreateCaseRequest request) {
         Company company = companyRepository.findByOrgNumber(request.orgNumber())
@@ -29,6 +31,14 @@ public class NegotiationCaseService {
                     Company c = new Company();
                     c.setOrgNumber(snapshot.getOrgNumber());
                     c.setName(snapshot.getCompanyName());
+                    c.setIndustryCode(snapshot.getIndustryCode());
+                    c.setIndustryDescription(snapshot.getIndustryDescription());
+                    c.setOrganizationFormCode(snapshot.getOrganizationFormCode());
+                    c.setOrganizationFormDescription(snapshot.getOrganizationFormDescription());
+                    c.setEmployees(snapshot.getEmployees());
+                    c.setBankrupt(snapshot.getBankrupt());
+                    c.setUnderLiquidation(snapshot.getUnderLiquidation());
+                    c.setBusinessAddress(snapshot.getBusinessAddress());
 
                     return companyRepository.save(c);
                 });
