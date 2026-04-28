@@ -21,5 +21,7 @@ frontend/node_modules/
 application-local.properties
 
 # Lokale env-variabler (inneholder API-nøkler)
+.env
+.env.local
 frontend/.env.local
 frontend/.env
