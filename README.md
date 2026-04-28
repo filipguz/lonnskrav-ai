@@ -1,143 +1,98 @@
 # Lønnskrav AI
 
-En beslutningsstøtte-applikasjon for tillitsvalgte som gjør selskapsdata om til dokumenterte og begrunnede lønnskrav.
+Beslutningsstøtte for tillitsvalgte under lokale lønnsforhandlinger. Appen henter selskapsdata og regnskapstall fra offentlige registre, analyserer dem mot tariffens fire kriterier og genererer et redigerbart utkast til lønnskrav.
 
 ---
 
-## 🚀 Hva er dette?
+## Hva er bygget
 
-Lønnskrav AI er en norsk webapplikasjon som forenkler arbeidet med lokale lønnsforhandlinger.
-
-Appen henter inn offentlige og kommersielle selskapsdata, analyserer dem opp mot tariffens fire kriterier, og genererer et forslag til lønnskrav med tydelig begrunnelse og sporbart datagrunnlag.
-
----
-
-## 🎯 Problem
-
-Lokale lønnsforhandlinger er ofte:
-
-* Tidkrevende
-* Manuelle
-* Lite standardiserte
-* Avhengige av enkeltpersoners erfaring
-
-Tillitsvalgte må selv:
-
-* finne relevante regnskapstall
-* tolke økonomien
-* koble dette til tariffkriterier
-* formulere et godt begrunnet krav
+- **Selskapsoppslag** via Brønnøysundregistrene (org.nr → navn, bransje, ansatte, org-form, adresse, status)
+- **Regnskapsdata** via Regnskapsregisteret (siste tilgjengelige regnskap: omsetning, driftsmargin, egenkapitalprosent, årsresultat)
+- **Regelbasert analyse** av de fire kriteriene i lokale forhandlinger:
+  - Økonomi — basert på egenkapitalprosent og driftsmargin
+  - Produktivitet — omsetning per ansatt
+  - Fremtidsutsikter — årsresultat og egenkapitalstyrke
+  - Konkurranseevne — omsetningsstørrelse og antall ansatte
+- **Forklaringstekst** per kriterium med faktiske tall fra regnskapet
+- **Autogenerert utkast** til lønnskravbrev, redigerbart i nettleseren
+- **Landingsside** med produktpresentasjon
 
 ---
 
-## 💡 Løsning
+## Teknologi
 
-Denne applikasjonen automatiserer og strukturerer prosessen:
-
-1. Henter selskapsdata (f.eks. fra Proff / Brønnøysundregistrene)
-2. Analyserer data mot de fire kriteriene:
-
-   * Økonomi
-   * Produktivitet
-   * Fremtidsutsikter
-   * Konkurranseevne
-3. Gir en vurdering per kriterium
-4. Genererer:
-
-   * forslag til lønnskrav
-   * begrunnelse og argumentasjon
-   * datagrunnlag og referanser
+| Lag | Valg |
+|---|---|
+| Backend | Java 17 · Spring Boot 3.5 · Spring Data JPA |
+| Database | H2 (utvikling) · PostgreSQL (produksjon) |
+| Migrering | Flyway (klar, ikke aktivert i dev) |
+| Frontend | React 19 · TypeScript · Tailwind CSS 4 · Vite |
+| Datakilde | Brreg Enhetsregisteret + Regnskapsregisteret (åpne API-er) |
+| Deploy | Docker (multi-stage) |
 
 ---
 
-## 🧠 Hvordan det fungerer
+## Komme i gang
 
-Applikasjonen kombinerer tre hoveddeler:
+### Backend
 
-### 1. Datainnhenting
+```bash
+./mvnw spring-boot:run
+```
 
-* Integrasjon mot eksterne API-er
-* Henter regnskapstall og selskapsinformasjon
-* Strukturering av nøkkeltall
+Starter på `http://localhost:8080`. Bruker H2 (in-file) automatisk — ingen databaseoppsett nødvendig.
 
-### 2. Regelmotor (kjerne)
+### Frontend
 
-* Evaluerer data opp mot definerte regler
-* Gir score/indikasjon per kriterium
-* Fullt forklarbar logikk (ikke black box)
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### 3. AI (LLM)
+Starter på `http://localhost:5173`.
 
-* Genererer tekst og dokumentutkast
-* Lager argumentasjon basert på analysen
-* Foreslår formuleringer og struktur
+### Docker (full stack)
 
----
-
-## ⚠️ Viktige prinsipper
-
-* **Transparens:** Alle vurderinger skal kunne forklares
-* **Sporbarhet:** Tall skal kunne spores til kilde
-* **Mennesket i kontroll:** AI gir forslag – ikke beslutninger
-* **Domene først:** Regelmotor før AI
+```bash
+docker build -t lonnskrav-ai .
+docker run -p 8080:8080 lonnskrav-ai
+```
 
 ---
 
-## 🏗️ Teknologi (planlagt)
+## API-oversikt
 
-* **Backend:** Java + Spring Boot
-* **Database:** PostgreSQL
-* **Frontend:** (TBD – f.eks. React)
-* **AI:** LLM via API
-* **Integrasjoner:**
-
-  * Brønnøysundregistrene
-  * Proff (valgfritt / premium)
-
----
-
-## 📦 MVP (første versjon)
-
-Første versjon vil støtte:
-
-* Søk på selskap (org.nr/navn)
-* Henting av nøkkeltall
-* Enkel vurdering av de 4 kriteriene
-* Generering av:
-
-  * lønnskrav
-  * begrunnelse
-* Nedlasting som tekst/PDF
+```
+POST /api/cases                  Opprett forhandlingssak (henter Brreg automatisk)
+GET  /api/cases                  List alle saker
+GET  /api/cases/{id}             Hent én sak
+GET  /api/cases/{id}/analyze     Kjør analyse (henter regnskap live)
+GET  /api/company-data/{orgnr}   Hent rådata fra Brreg
+```
 
 ---
 
-## 🔮 Videre utvikling
+## Prinsipper
 
-* Sammenligning mot bransje
-* Historiske analyser
-* Tilpasning per tariffområde
-* Samarbeidsfunksjoner for tillitsvalgte
-* Dashboard og visualiseringer
-
----
-
-## 🎯 Mål
-
-Å gjøre lokale lønnsforhandlinger:
-
-* mer datadrevne
-* mer konsistente
-* mindre tidkrevende
-* bedre dokumentert
+- **Sporbarhet** — alle tall kobles til kilde (Brreg, Regnskapsregisteret)
+- **Forklarbarhet** — regelbasert logikk, ikke black box
+- **Mennesket i kontroll** — appen gir forslag, tillitsvalgte tar beslutningene
+- **Domene først** — analyse basert på regler, AI kan legges på etterpå
 
 ---
 
-## 🤝 Status
+## Veikart
 
-Prosjektet er i tidlig fase (MVP/konsept).
+- [ ] Innlogging og brukerhåndtering (multi-tenancy)
+- [ ] AI-assistert tekstgenerering (begrunnelsestekst)
+- [ ] PDF-eksport av lønnskravbrev
+- [ ] PostgreSQL + Flyway i produksjon
+- [ ] Historiske regnskapsdata (år-over-år-sammenligning)
+- [ ] Bransjesammenligning
 
 ---
 
-## 📄 Lisens
+## Lisens
 
-(TBD)
+TBD
