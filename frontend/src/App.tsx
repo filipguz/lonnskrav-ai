@@ -450,6 +450,21 @@ export default function App() {
           />
         </section>
       </main>
+
+      <footer className="mt-12 border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-sm text-slate-500">
+            Utviklet av{" "}
+            <a href="https://github.com/filipguz" className="font-medium text-slate-700 hover:text-slate-900" target="_blank" rel="noopener noreferrer">
+              filipguz
+            </a>
+          </span>
+          <div className="flex gap-4 text-sm text-slate-500">
+            <a href="mailto:hei@filipgustavsen.no" className="hover:text-slate-900">hei@filipgustavsen.no</a>
+            <a href="https://filipgustavsen.no" className="hover:text-slate-900" target="_blank" rel="noopener noreferrer">filipgustavsen.no</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
