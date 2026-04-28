@@ -24,8 +24,10 @@ public class SecurityConfig {
         } else {
             http
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/actuator/health").permitAll()
-                            .anyRequest().authenticated()
+                            .requestMatchers("/actuator/health", "/", "/index.html",
+                                    "/assets/**", "/favicon.svg", "/favicon.ico").permitAll()
+                            .requestMatchers("/api/**").authenticated()
+                            .anyRequest().permitAll()
                     )
                     .oauth2ResourceServer(oauth2 -> oauth2
                             .jwt(jwt -> jwt.jwkSetUri(jwksUri))
