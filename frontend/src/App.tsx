@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SignedIn, SignedOut, SignIn, UserButton, useAuth } from "@clerk/clerk-react";
+import { Show, SignIn, UserButton, useAuth } from "@clerk/react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
@@ -79,7 +79,7 @@ export function AppWithAuth() {
   const { getToken } = useAuth();
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-8">
           <div className="flex items-center gap-3">
             <img src="/favicon.svg" alt="" className="h-10 w-10" />
@@ -90,10 +90,10 @@ export function AppWithAuth() {
           </div>
           <SignIn />
         </div>
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <App getToken={getToken} authSlot={<UserButton />} />
-      </SignedIn>
+      </Show>
     </>
   );
 }
